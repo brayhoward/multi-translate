@@ -4,6 +4,12 @@ import { SearchBar, Icon } from 'react-native-elements';
 import { percentScreenHeight, percentScreenWidth } from '../utils.js';
 import { colors, bd } from '../styleVariables';
 
+//////////////////////////////////////////////////////////////////////
+// AppInput Component
+// Props:
+//  handleChangeText: function that returns the input value on change
+//  handleClear: function that is called on cancel press
+//////////////////////////////////////////////////////////////////////
 export default class AppInput extends Component {
   static get defualtWidth() { return percentScreenWidth(92) }
 
@@ -38,6 +44,7 @@ export default class AppInput extends Component {
 
   render() {
     const { value, keyboardOpen, animatedWidth, animatedMargin, hasFocus } = this.state;
+    const { handleChangeText, handleClear } = this.props;
     const hasText = !!value.length;
 
     return (
@@ -52,19 +59,28 @@ export default class AppInput extends Component {
               value={value}
 
               ref={input => this._input = input}
-              onChangeText={(value) => this.setState({ value })}
+              onChangeText={(value) => {
+                this.setState({ value })
+                handleChangeText(value)
+              }}
               onFocus={this.handleFocus}
               onBlur={this.handleBlur}
             />
 
             { hasText &&
-              <TouchableOpacity style={styles.clearText} onPress={this.clearValue}>
+              <TouchableOpacity
+                style={styles.clearText}
+                onPress={() => {
+                  this.clearValue()
+                  handleClear()
+                }}
+              >
                 <Icon name='clear' color={colors.light} />
               </TouchableOpacity>
             }
           </Animated.View>
 
-          <TouchableOpacity onPress={() => this._input.blur()}>
+          <TouchableOpacity onPress={() => this._input.blur()} >
             <Text style={styles.cancel}>
               Cancel
             </Text>

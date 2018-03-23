@@ -13,12 +13,18 @@ export default class App extends React.Component {
         <AppHeader />
 
         <View style={styles.container}>
-          <AppInput />
-
-          {/* <Headings.One style={styles.clearSearch}>X</Headings.One> */}
+          <AppInput handleChangeText={this.handleTranslations} handleClear={this.handleInputClear} />
         </View>
       </View>
     );
+  }
+
+  handleTranslations = value => {
+    console.log('value', 'LOGGED BELLOW');
+    console.log(value);
+  }
+  handleInputClear = () => {
+    console.log('handleClear fired')
   }
 }
 
