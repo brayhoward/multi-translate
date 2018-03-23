@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Animated, View, TextInput, Text, TouchableOpacity } from 'react-native';
+import debounce from 'lodash.debounce';
 import { SearchBar, Icon } from 'react-native-elements';
 import { percentScreenHeight, percentScreenWidth } from '../utils.js';
 import { colors, bd } from '../styleVariables';
@@ -19,9 +20,18 @@ export default class AppInput extends Component {
 
   static get defualtWidth() { return percentScreenWidth(92) }
 
+  debouncedHandleChangeText = debounce(
+    (value) => this.props.handleChangeText(value),
+    500,
+    {
+      trailing: true,
+      maxWait: 1000
+    }
+  )
+
   render() {
     const { value, keyboardOpen, animatedWidth, animatedMargin, hasFocus } = this.state;
-    const { handleChangeText, handleClear } = this.props;
+    const { handleClear } = this.props;
     const hasText = !!value.length;
 
     return (
@@ -38,7 +48,7 @@ export default class AppInput extends Component {
               ref={input => this._input = input}
               onChangeText={(value) => {
                 this.setState({ value })
-                handleChangeText(value)
+                this.debouncedHandleChangeText(value)
               }}
               onFocus={this.handleFocus}
               onBlur={this.handleBlur}
