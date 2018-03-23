@@ -1,14 +1,35 @@
 import { googleTranslateToken } from '../secrets';
 
-export default async function(q = '') {
+export default async (value) => {
+  try {
+    const translations = await Promise.all([
+      // Spanish
+      translate(value, 'es') //,
+      // // Chinese
+      // translate(value, 'zh'),
+      // // Japanese
+      // translate(value, 'ja'),
+      // // 	Arabic
+      // translate(value, 'ar'),
+    ])
+
+    return translations;
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+const translate = async (q = '', target) => {
   const url = 'https://translation.googleapis.com/language/translate/v2';
 
   const data = {
     q,
     source: 'en',
-    target: 'es',
+    target,
     format: 'text'
   }
+  console.log('googleTranslateToken', 'LOGGED BELLOW');
+  console.log(googleTranslateToken);
 
   try {
     const response = await fetch(url, {
@@ -16,14 +37,14 @@ export default async function(q = '') {
       body: JSON.stringify(data),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${googleTranslateToken}`
+        'Authorization': 'Bearer ya29.c.El-HBSzFfpatWXBAEH5y-KdNPyRjXSGkzOXNtsRPVPgHXQ46QYruyRrEXYaRB0wYM8KTzQ81FVNPkhFobI-lklkfnWSal212h_S7QixgbT0h7OqsebD3H5XQ54AyAVcLPQ'
       }
     });
-    const payload = await response.text();
+    const payload = await response.text()
 
     return payload;
 
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
   }
 }
