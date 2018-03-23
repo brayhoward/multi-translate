@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import { View, TextInput } from 'react-native';
+import { SearchBar, Icon } from 'react-native-elements';
 import { percentScreenWidth } from '../utils.js';
-import { SearchBar } from 'react-native-elements';
+import { colors } from '../styleVariables';
 
 export default class extends Component {
   constructor(props) {
@@ -12,16 +14,31 @@ export default class extends Component {
   }
 
   render() {
+    const { value } = this.state;
+
     return (
-      <SearchBar
-        noIcon
-        placeholder="Start typing to see translations..."
-        containerStyle={styles.container}
-        inputStyle={styles.input}
-        onChangeText={(value) => console.log(value)}
-        onClear={() => console.log('clear')}
-        onCancel={() => console.log('cancel')}
-      />
+      <View
+        style={{
+          backgroundColor: colors.medLight,
+          paddingVertical: 10,
+          paddingHorizontal: 15,
+        }}
+      >
+        <TextInput
+          placeholder="Start typing to see translations..."
+          placeholderTextColor={colors.lightMedium}
+          onChangeText={(value) => this.setState({ value })}
+          style={{
+            color: colors.light,
+            backgroundColor: colors.medDark,
+            height: 30,
+            borderRadius: 4,
+            paddingLeft: 5
+          }}
+        />
+
+        {/* <Icon name='clear' color={colors.light}/> */}
+      </View>
     )
   }
 }
@@ -38,7 +55,7 @@ const styles = {
     borderBottomWidth: borderWidth
   },
   input: {
-    color: '#fafafa'
+    color: 'colors.light'
   },
   clearSearch: {
     position: 'absolute',
