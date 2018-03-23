@@ -19,9 +19,15 @@ export default class App extends React.Component {
     );
   }
 
+  ///////////////////
+  // PRIVATE METHODS
+  ///////////////////
   handleTranslations = value => {
-    console.log('value', 'LOGGED BELLOW');
-    console.log(value);
+    getTranslations()
+    .then(translations => {
+      console.log('translations', 'LOGGED BELLOW');
+      console.log(translations);
+    })
   }
   handleInputClear = () => {
     console.log('handleClear fired')
@@ -43,3 +49,17 @@ const styles = {
     top: 6,
   }
 };
+
+async function getTranslations() {
+  try {
+    const response = await fetch(
+      'https://facebook.github.io/react-native/movies.json'
+    );
+    const payload = await response.json();
+
+    return payload;
+
+  } catch (error) {
+    console.error(error);
+  }
+}

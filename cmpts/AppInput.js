@@ -11,36 +11,13 @@ import { colors, bd } from '../styleVariables';
 //  handleClear: function that is called on cancel press
 //////////////////////////////////////////////////////////////////////
 export default class AppInput extends Component {
-  static get defualtWidth() { return percentScreenWidth(92) }
-
   state = {
     value: '',
     animatedWidth: new Animated.Value(AppInput.defualtWidth),
     hasFocus: false
   }
-  setFocusState(hasFocus = true) { this.setState({ hasFocus }) }
 
-  handleFocus = () => {
-    this.setFocusState()
-    this.animateWidth(percentScreenWidth(75))
-  }
-
-  handleBlur = () => {
-    this.setFocusState(false)
-    this.animateWidth()
-  }
-
-  animateWidth(toValue = AppInput.defualtWidth) {
-    Animated.timing(
-      this.state.animatedWidth,
-      {
-        toValue,
-        duration: 250,
-      }
-    ).start();
-  }
-
-  clearValue = () => this.setState({value: ''})
+  static get defualtWidth() { return percentScreenWidth(92) }
 
   render() {
     const { value, keyboardOpen, animatedWidth, animatedMargin, hasFocus } = this.state;
@@ -88,6 +65,33 @@ export default class AppInput extends Component {
         </View>
       </View>
     )
+  }
+
+  ///////////////////
+  // PRIVATE METHODS
+  ///////////////////
+  setFocusState(hasFocus = true) { this.setState({ hasFocus }) }
+
+  clearValue = () => this.setState({value: ''})
+
+  handleFocus = () => {
+    this.setFocusState()
+    this.animateWidth(percentScreenWidth(75))
+  }
+
+  handleBlur = () => {
+    this.setFocusState(false)
+    this.animateWidth()
+  }
+
+  animateWidth(toValue = AppInput.defualtWidth) {
+    Animated.timing(
+      this.state.animatedWidth,
+      {
+        toValue,
+        duration: 250,
+      }
+    ).start();
   }
 }
 
