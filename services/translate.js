@@ -1,5 +1,15 @@
 import { googleTranslateToken } from '../secrets';
 
+const isoTable = {
+  'es': 'Spanish',
+  'zh': 'Chinese',
+  'ja': 'Japanese',
+  'ar': 'Arabic',
+  'hi': 'Hindi',
+  'pt': 'Portuguese',
+  'ru': 'Russian'
+}
+
 export default async (value) => {
   try {
     const translations = await Promise.all([
@@ -9,8 +19,14 @@ export default async (value) => {
       translate(value, 'zh'),
       // Japanese
       translate(value, 'ja'),
-      // 	Arabic
+      // Arabic
       translate(value, 'ar'),
+      // Hindi
+      translate(value, 'hi'),
+      // Portuguese
+      translate(value, 'pt'),
+      // Russian
+      translate(value, 'ru')
     ])
 
     return translations;
@@ -40,7 +56,9 @@ const translate = async (q = '', target) => {
     });
     const payload = await response.text()
 
-    return JSON.parse(payload).data.translations[0];
+    const translation = JSON.parse(payload).data.translations[0].translatedText;
+
+    return { translation, language: isoTable[target] }
 
   } catch (err) {
     console.error(err);
