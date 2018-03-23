@@ -4,6 +4,8 @@ const medium = '#7a7a7a';
 const medLight = '#393E42';
 const medDark = '#303337';
 const dark = '#222';
+// Spotify green
+const accent = '#1db954';
 
 export const colors = {
   light,
@@ -11,7 +13,8 @@ export const colors = {
   medium,
   medLight,
   medDark,
-  dark
+  dark,
+  accent
 }
 
 // For debugging purposes
