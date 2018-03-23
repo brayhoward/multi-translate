@@ -23,7 +23,7 @@ export default class App extends React.Component {
   // PRIVATE METHODS
   ///////////////////
   handleTranslations = value => {
-    getTranslations()
+    getTranslations(value)
     .then(translations => {
       console.log('translations', 'LOGGED BELLOW');
       console.log(translations);
@@ -50,12 +50,26 @@ const styles = {
   }
 };
 
-async function getTranslations() {
+async function getTranslations(q = '') {
+  const url = 'https://translation.googleapis.com/language/translate/v2';
+
+  const data = {
+    q,
+    source: 'en',
+    target: 'es',
+    format: 'text'
+  }
+
   try {
-    const response = await fetch(
-      'https://facebook.github.io/react-native/movies.json'
-    );
-    const payload = await response.json();
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer `BEARER_TOKEN_GOES_HERE`'
+      }
+    });
+    const payload = await response.text();
 
     return payload;
 
