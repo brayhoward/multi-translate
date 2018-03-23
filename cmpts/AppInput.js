@@ -103,7 +103,8 @@ const styles = {
     backgroundColor: colors.medDark,
     height: 30,
     borderRadius: 4,
-    paddingLeft: 5
+    paddingLeft: 5,
+    paddingRight: 29
   },
   clearSearch: {
     position: 'absolute',
