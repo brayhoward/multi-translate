@@ -5,22 +5,28 @@ import { percentScreenHeight, percentScreenWidth } from '../utils.js';
 import { colors, bd } from '../styleVariables';
 
 export default class extends Component {
-  constructor(props) {
-    super(props)
+  state = {
+    value: '',
+    animatedInputWidth: new Animated.Value( percentScreenWidth(92) ),
+    cancelBtnMarginRight: new Animated.Value( -percentScreenWidth(15) )
+  }
 
-    this.state = {
-      value: '',
-      inputWidth: new Animated.Value( percentScreenWidth(92) ),
-      cancelBtnMarginRight: new Animated.Value( -percentScreenWidth(15) )
-    }
+  componentDidMount() {
+    Animated.timing(                      // Animate over time
+      this.state.animatedInputWidth,    // The animated value to drive
+      {
+        toValue: percentScreenWidth(20),           // Animate to opacity: 1 (opaque)
+        duration: 1000,      // Make it take a while
+      }
+    ).start();
   }
 
   handleFocus = () => {
     Animated.timing(                      // Animate over time
-      this.state.cancelBtnMarginRight,    // The animated value to drive
+      this.state.animatedInputWidth,    // The animated value to drive
       {
-        toValue: 0,           // Animate to opacity: 1 (opaque)
-        duration: 1000,      // Make it take a while
+        toValue: percentScreenWidth(20),           // Animate to opacity: 1 (opaque)
+        duration: 10000,      // Make it take a while
       }
     ).start();
   }
@@ -30,17 +36,17 @@ export default class extends Component {
   clearValue = () => this.setState({value: ''})
 
   render() {
-    const { value, keyboardOpen, inputWidth, cancelBtnMarginRight } = this.state;
+    const { value, keyboardOpen, animatedInputWidth } = this.state;
     const hasText = !!value.length;
 
     return (
       <View style={styles.container}>
         <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', overflow: 'hidden'}}>
-          <Animated.View style={{flex: 1}}>
+          <Animated.View style={{width: animatedInputWidth, ...bd}}>
             <TextInput
               placeholder="Translate"
               placeholderTextColor={colors.lightMedium}
-              style={{...styles.input, width: inputWidth}}
+              style={styles.input}
               value={value}
 
               ref={input => this._input = input}
@@ -58,9 +64,7 @@ export default class extends Component {
 
           { !keyboardOpen &&
             <TouchableOpacity onPress={() => this._input.blur()}>
-              <Text
-                style={{ ...styles.cancel, marginRight: cancelBtnMarginRight }}
-              >
+              <Text style={styles.cancel}>
                 Cancel
               </Text>
             </TouchableOpacity>
