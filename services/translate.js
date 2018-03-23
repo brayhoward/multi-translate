@@ -62,5 +62,6 @@ const translate = async (q = '', target) => {
 
   } catch (err) {
     console.error(err);
+    return []
   }
 }

@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { percentScreenWidth } from './utils.js';
 import getTranslations from './services/translate';
 import { colors } from './styleVariables';
@@ -25,12 +25,28 @@ export default class App extends React.Component<Props, State> {
   }
 
   render() {
+    const { translations } = this.state;
+
     return (
       <View style={{ flex: 1 }}>
         <AppHeader />
 
         <View style={styles.container}>
-          <AppInput handleChangeText={this.handleTranslations} handleClear={this.handleInputClear} />
+          <AppInput handleChangeText={this.getTranslations} handleClear={this.handleInputClear} />
+
+          <ScrollView style={styles.scrollView}>
+            {translations.map(({ text, language }, i) => (
+              <View key={i}>
+                <Headings.Two>{language}</Headings.Two>
+
+                <View style={{marginBottom: 10 }}>
+                  <Headings.One style={{ color: colors.accent }}>
+                    {text}
+                  </Headings.One>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
         </View>
       </View>
     );
@@ -39,15 +55,14 @@ export default class App extends React.Component<Props, State> {
   ///////////////////
   // PRIVATE METHODS
   ///////////////////
-  handleTranslations = value => {
+  getTranslations = value => {
     getTranslations(value)
     .then(translations => {
-      console.log('translations', 'LOGGED BELLOW');
-      console.log(translations);
+      this.setState({ translations })
     })
   }
   handleInputClear = () => {
-    console.log('handleClear fired')
+    this.setState({ translations: [] })
   }
 }
 
@@ -64,5 +79,9 @@ const styles = {
     position: 'absolute',
     right: 14,
     top: 6,
+  },
+  scrollView: {
+    paddingHorizontal: 15,
+    paddingTop: 20
   }
 };
