@@ -56,9 +56,9 @@ const translate = async (q = '', target) => {
     });
     const payload = await response.text()
 
-    const translation = JSON.parse(payload).data.translations[0].translatedText;
+    const text = JSON.parse(payload).data.translations[0].translatedText;
 
-    return { translation, language: isoTable[target] }
+    return { text, language: isoTable[target] }
 
   } catch (err) {
     console.error(err);

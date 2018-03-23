@@ -1,3 +1,4 @@
+// @flow
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { percentScreenWidth } from './utils.js';
@@ -7,7 +8,22 @@ import AppHeader from './cmpts/AppHeader';
 import Headings from './cmpts/Headings';
 import AppInput from './cmpts/AppInput';
 
-export default class App extends React.Component {
+type Translation = {
+  text: string,
+  language: string
+}
+
+type State = {
+  translations: Array<Translation>
+}
+
+type Props = undefined;
+
+export default class App extends React.Component<Props, State> {
+  state = {
+    translations: []
+  }
+
   render() {
     return (
       <View style={{ flex: 1 }}>
