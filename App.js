@@ -1,27 +1,39 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Header } from 'react-native-elements';
+import { percentScreenWidth } from './utils.js';
+import { colors } from './styleVariables';
+import AppHeader from './cmpts/AppHeader';
+import Headings from './cmpts/Headings';
+import AppInput from './cmpts/AppInput';
 
 export default class App extends React.Component {
   render() {
     return (
       <View style={{ flex: 1 }}>
-        <Header centerComponent={{ text: 'MULTI TRANSLATE', style: { color: '#fff' } }} />
-
+        <AppHeader />
 
         <View style={styles.container}>
-          <Text>Start typing to see translations</Text>
+          <AppInput />
+
+          {/* <Headings.One style={styles.clearSearch}>X</Headings.One> */}
         </View>
       </View>
     );
   }
 }
 
-const styles = StyleSheet.create({
+const styles = {
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: colors.dark,
   },
-});
+  heading: {
+    marginVertical: 10,
+    textAlign: 'center'
+  },
+  clearSearch: {
+    position: 'absolute',
+    right: 14,
+    top: 6,
+  }
+};
