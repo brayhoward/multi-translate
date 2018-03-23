@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { View, TextInput, Text, TouchableOpacity } from 'react-native';
+import { Animated, View, TextInput, Text, TouchableOpacity } from 'react-native';
 import { SearchBar, Icon } from 'react-native-elements';
-import { percentScreenHeight } from '../utils.js';
+import { percentScreenHeight, percentScreenWidth } from '../utils.js';
 import { colors, bd } from '../styleVariables';
 
 export default class extends Component {
@@ -9,28 +9,38 @@ export default class extends Component {
     super(props)
 
     this.state = {
-      value: ''
+      value: '',
+      inputWidth: new Animated.Value( percentScreenWidth(92) ),
+      cancelBtnMarginRight: new Animated.Value( -percentScreenWidth(15) )
     }
   }
 
-  handleFocus = () => this.setState({ keyboardOpen: true })
+  handleFocus = () => {
+    Animated.timing(                      // Animate over time
+      this.state.cancelBtnMarginRight,    // The animated value to drive
+      {
+        toValue: 0,           // Animate to opacity: 1 (opaque)
+        duration: 1000,      // Make it take a while
+      }
+    ).start();
+  }
 
   handleBlur = () => this.setState({ keyboardOpen: false })
 
   clearValue = () => this.setState({value: ''})
 
   render() {
-    const { value, keyboardOpen } = this.state;
+    const { value, keyboardOpen, inputWidth, cancelBtnMarginRight } = this.state;
     const hasText = !!value.length;
 
     return (
       <View style={styles.container}>
-        <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-          <View style={{flex: 1}}>
+        <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', overflow: 'hidden'}}>
+          <Animated.View style={{flex: 1}}>
             <TextInput
               placeholder="Translate"
               placeholderTextColor={colors.lightMedium}
-              style={styles.input}
+              style={{...styles.input, width: inputWidth}}
               value={value}
 
               ref={input => this._input = input}
@@ -44,11 +54,15 @@ export default class extends Component {
                 <Icon name='clear' color={colors.light} />
               </TouchableOpacity>
             }
-          </View>
+          </Animated.View>
 
-          { keyboardOpen &&
+          { !keyboardOpen &&
             <TouchableOpacity onPress={() => this._input.blur()}>
-              <Text style={styles.cancel}>Cancel</Text>
+              <Text
+                style={{ ...styles.cancel, marginRight: cancelBtnMarginRight }}
+              >
+                Cancel
+              </Text>
             </TouchableOpacity>
           }
         </View>
@@ -61,7 +75,7 @@ const styles = {
   container: {
     backgroundColor: colors.medLight,
     paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingLeft: 15,
     minHeight: percentScreenHeight(6)
   },
   input: {
@@ -79,6 +93,6 @@ const styles = {
   clearText: { position: 'absolute', right: 5, top: 3 },
   cancel: {
     color: colors.light,
-    paddingLeft: 8
+    marginLeft: 8
   }
 }
