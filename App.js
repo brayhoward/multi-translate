@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { percentScreenWidth } from './utils.js';
+import getTranslations from './services/translate';
 import { colors } from './styleVariables';
 import AppHeader from './cmpts/AppHeader';
 import Headings from './cmpts/Headings';
 import AppInput from './cmpts/AppInput';
-import { googleTranslateToken } from './secrets';
 
 export default class App extends React.Component {
   render() {
@@ -50,31 +50,3 @@ const styles = {
     top: 6,
   }
 };
-
-async function getTranslations(q = '') {
-  const url = 'https://translation.googleapis.com/language/translate/v2';
-
-  const data = {
-    q,
-    source: 'en',
-    target: 'es',
-    format: 'text'
-  }
-
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${googleTranslateToken}`
-      }
-    });
-    const payload = await response.text();
-
-    return payload;
-
-  } catch (error) {
-    console.error(error);
-  }
-}
