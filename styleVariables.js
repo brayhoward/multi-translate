@@ -13,3 +13,6 @@ export const colors = {
   medDark,
   dark
 }
+
+// For debugging purposes
+export const bd = { borderWidth: 1, borderColor: 'red' }
