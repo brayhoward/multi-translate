@@ -4,45 +4,42 @@ import { SearchBar, Icon } from 'react-native-elements';
 import { percentScreenHeight, percentScreenWidth } from '../utils.js';
 import { colors, bd } from '../styleVariables';
 
-export default class extends Component {
+export default class AppInput extends Component {
+  static get defualtWidth() { return percentScreenWidth(92) }
+
   state = {
     value: '',
-    animatedInputWidth: new Animated.Value( percentScreenWidth(92) ),
-    cancelBtnMarginRight: new Animated.Value( -percentScreenWidth(15) )
-  }
-
-  componentDidMount() {
-    Animated.timing(                      // Animate over time
-      this.state.animatedInputWidth,    // The animated value to drive
-      {
-        toValue: percentScreenWidth(20),           // Animate to opacity: 1 (opaque)
-        duration: 1000,      // Make it take a while
-      }
-    ).start();
+    animatedWidth: new Animated.Value(AppInput.defualtWidth)
   }
 
   handleFocus = () => {
-    Animated.timing(                      // Animate over time
-      this.state.animatedInputWidth,    // The animated value to drive
+    this.animateWidth(percentScreenWidth(75))
+  }
+
+  handleBlur = () => {
+    this.animateWidth()
+  }
+
+  animateWidth(toValue = AppInput.defualtWidth) {
+    Animated.timing(
+      this.state.animatedWidth,
       {
-        toValue: percentScreenWidth(20),           // Animate to opacity: 1 (opaque)
-        duration: 10000,      // Make it take a while
+        toValue,
+        duration: 250,
       }
     ).start();
   }
-
-  handleBlur = () => this.setState({ keyboardOpen: false })
 
   clearValue = () => this.setState({value: ''})
 
   render() {
-    const { value, keyboardOpen, animatedInputWidth } = this.state;
+    const { value, keyboardOpen, animatedWidth, animatedMargin } = this.state;
     const hasText = !!value.length;
 
     return (
       <View style={styles.container}>
         <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', overflow: 'hidden'}}>
-          <Animated.View style={{width: animatedInputWidth, ...bd}}>
+          <Animated.View style={{width: animatedWidth}}>
             <TextInput
               placeholder="Translate"
               placeholderTextColor={colors.lightMedium}
@@ -62,13 +59,11 @@ export default class extends Component {
             }
           </Animated.View>
 
-          { !keyboardOpen &&
-            <TouchableOpacity onPress={() => this._input.blur()}>
-              <Text style={styles.cancel}>
-                Cancel
-              </Text>
-            </TouchableOpacity>
-          }
+          <TouchableOpacity onPress={() => this._input.blur()}>
+            <Text style={styles.cancel}>
+              Cancel
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     )
@@ -97,6 +92,6 @@ const styles = {
   clearText: { position: 'absolute', right: 5, top: 3 },
   cancel: {
     color: colors.light,
-    marginLeft: 8
+    marginLeft: 17
   }
 }
