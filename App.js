@@ -5,6 +5,7 @@ import { colors } from './styleVariables';
 import AppHeader from './cmpts/AppHeader';
 import Headings from './cmpts/Headings';
 import AppInput from './cmpts/AppInput';
+import { googleTranslateToken } from './secrets';
 
 export default class App extends React.Component {
   render() {
@@ -66,7 +67,7 @@ async function getTranslations(q = '') {
       body: JSON.stringify(data),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer `BEARER_TOKEN_GOES_HERE`'
+        'Authorization': `Bearer ${googleTranslateToken}`
       }
     });
     const payload = await response.text();
