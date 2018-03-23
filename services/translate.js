@@ -4,13 +4,13 @@ export default async (value) => {
   try {
     const translations = await Promise.all([
       // Spanish
-      translate(value, 'es') //,
-      // // Chinese
-      // translate(value, 'zh'),
-      // // Japanese
-      // translate(value, 'ja'),
-      // // 	Arabic
-      // translate(value, 'ar'),
+      translate(value, 'es'),
+      // Chinese
+      translate(value, 'zh'),
+      // Japanese
+      translate(value, 'ja'),
+      // 	Arabic
+      translate(value, 'ar'),
     ])
 
     return translations;
@@ -28,8 +28,6 @@ const translate = async (q = '', target) => {
     target,
     format: 'text'
   }
-  console.log('googleTranslateToken', 'LOGGED BELLOW');
-  console.log(googleTranslateToken);
 
   try {
     const response = await fetch(url, {
@@ -37,12 +35,12 @@ const translate = async (q = '', target) => {
       body: JSON.stringify(data),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ya29.c.El-HBSzFfpatWXBAEH5y-KdNPyRjXSGkzOXNtsRPVPgHXQ46QYruyRrEXYaRB0wYM8KTzQ81FVNPkhFobI-lklkfnWSal212h_S7QixgbT0h7OqsebD3H5XQ54AyAVcLPQ'
+        'Authorization': `Bearer ${googleTranslateToken}`
       }
     });
     const payload = await response.text()
 
-    return payload;
+    return JSON.parse(payload).data.translations[0];
 
   } catch (err) {
     console.error(err);
