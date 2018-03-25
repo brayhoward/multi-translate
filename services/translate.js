@@ -1,4 +1,5 @@
-import { googleTranslateToken } from '../secrets';
+import { azureTranslatorKey } from '../secrets';
+import { DOMParser } from 'xmldom';
 
 const isoTable = {
   'es': 'Spanish',
@@ -35,33 +36,37 @@ export default async (value) => {
   }
 }
 
-const translate = async (q = '', target) => {
-  const url = 'https://translation.googleapis.com/language/translate/v2';
-
-  const data = {
-    q,
-    source: 'en',
-    target,
-    format: 'text'
-  }
+const translate = async (text = '', targetLanguage) => {
+  const url = 'https://api.microsofttranslator.com/V2/Http.svc/Translate';
+  const encodedText = encodeURI(text);
+  const query = `?text=${encodedText}?&to=${targetLanguage}&from=en`
 
   try {
-    const response = await fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${googleTranslateToken}`
+    const response = await fetch(
+      `${url}${query}`,
+      {
+        headers: {
+          'Ocp-Apim-Subscription-Key': azureTranslatorKey
+        }
       }
-    });
-    const payload = await response.text()
+    );
 
-    const text = JSON.parse(payload).data.translations[0].translatedText;
+    const xml = await response.text()
+    const text = getTextFromXml(xml)
+    const language = isoTable[targetLanguage]
 
-    return { text, language: isoTable[target] }
+    return { text, language }
 
   } catch (err) {
     console.error(err);
     return []
   }
+}
+
+const xmlParser = new DOMParser();
+
+function getTextFromXml(xml) {
+  const responseDoc = xmlParser.parseFromString(xml);
+
+  return responseDoc.getElementsByTagName('string')[0].textContent;
 }
