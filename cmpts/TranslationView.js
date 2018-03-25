@@ -11,15 +11,17 @@ import { percentScreenWidth, percentScreenHeight } from '../utils.js';
 import { colors } from '../styleVariables';
 import Headings from './Headings';
 
+//////////////////////////////////////////////////////////////////////
+// TranslationView Component
+// Props:
+//  Tranlastion: { text: string, language: string }
+//  copyTextCallback: callback to fire when text is copied to clipboard
+//////////////////////////////////////////////////////////////////////
 export default class extends Component {
-  state = {
-    animatedWidth: new Animated.Value(percentScreenWidth(100)),
-    hasFocus: false
-  }
 
   render() {
-    const { text, language } = this.props.translation;
-    const { hasFocus } = this.state;
+    const { translation, copyTextCallback } = this.props;
+    const { text, language } = translation;
 
     return (
       <View
@@ -30,7 +32,12 @@ export default class extends Component {
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <Headings.Two>{language}</Headings.Two>
 
-          <TouchableOpacity onPress={() => Clipboard.setString(text)}>
+          <TouchableOpacity
+            onPress={() => {
+              Clipboard.setString(text);
+              copyTextCallback()
+            }}
+          >
             <Icon name='content-copy' color={colors.light} />
           </TouchableOpacity>
         </View>
@@ -39,15 +46,9 @@ export default class extends Component {
           <Headings.One style={{ color: colors.accent, ...styles.translation }}>
             {text}
           </Headings.One>
-
-          {/* {true && <Text style={{ color: colors.light }}>Delete</Text>} */}
         </View>
       </View>
     )
-  }
-
-  setFocusState(hasFocus = true) {
-    this.setState({ hasFocus })
   }
 }
 

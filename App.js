@@ -1,12 +1,13 @@
 // @flow
 import React from 'react';
-import {Text, View, ScrollView } from 'react-native';
-import { percentScreenWidth } from './utils.js';
+import { Text, View, ScrollView } from 'react-native';
+import StatusBarAlert from 'react-native-statusbar-alert';
+import { percentScreenWidth, percentScreenHeight } from './utils.js';
 import getTranslations from './services/translate';
 import { colors } from './styleVariables';
 import Headings from './cmpts/Headings';
 import AppInput from './cmpts/AppInput';
-import TranslationView from './cmpts/TranslationView'
+import TranslationView from './cmpts/TranslationView';
 
 type Translation = {
   text: string,
@@ -14,27 +15,43 @@ type Translation = {
 }
 
 type State = {
-  translations: Array<Translation>
+  translations: Array<Translation>,
+  copiedText: boolean,
+  timeoutId: number | undefined
 }
 
 type Props = undefined;
 
 export default class App extends React.Component<Props, State> {
   state = {
-    translations: []
+    translations: [],
+    copiedText: false
   }
 
   render() {
-    const { translations } = this.state;
+    const { translations, copiedText } = this.state;
 
     return (
       <View style={{ flex: 1 }}>
+        <StatusBarAlert
+          backgroundColor={colors.accentSecondary}
+          statusbarHeight={percentScreenHeight(6.1)}
+          style={{paddingBottom: copiedText ? 2 : 0 }}
+          pulse="background"
+          visible={copiedText}
+          message="Copied to clipboard!"
+        />
+
         <View style={styles.container}>
           <AppInput handleChangeText={this.getTranslations} handleClear={this.handleInputClear} />
 
           <ScrollView style={styles.scrollView} accessible={true}>
             {translations.map((translation, i) => (
-              <TranslationView key={i} translation={translation} />
+              <TranslationView
+                key={i}
+                translation={translation}
+                copyTextCallback={this.copyTextCallback}
+              />
             ))}
           </ScrollView>
         </View>
@@ -51,8 +68,40 @@ export default class App extends React.Component<Props, State> {
       this.setState({ translations })
     })
   }
+
   handleInputClear = () => {
     this.setState({ translations: [] })
+  }
+
+  copyTextCallback = () => {
+    const oneSecond = 1000;
+    const { timeoutId } = this.state;
+
+    // If banner is aleady active remove it and reset it
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      this.setState({ copiedText: false, timeoutId: undefined });
+
+      const id = setTimeout(
+        () => this.triggerCopiedTextAlert(),
+        .3 * oneSecond
+      );
+
+    } else {
+      this.triggerCopiedTextAlert()
+    }
+  }
+
+  triggerCopiedTextAlert() {
+    const oneSecond = 1000;
+    this.setState({ copiedText: true });
+
+    const id = setTimeout(
+      () => this.setState({ copiedText: false }),
+      1.5 * oneSecond
+    )
+
+    this.setState({ timeoutId: id })
   }
 }
 
