@@ -20,23 +20,18 @@ export default class AppInput extends Component {
 
   static get defualtWidth() { return percentScreenWidth(92) }
 
-  debouncedHandleChangeText = debounce(
-    (value) => this.props.handleChangeText(value),
-    500,
-    {
-      trailing: true,
-      maxWait: 1000
-    }
-  )
+  componentDidMount() {
+    const { handleCancel } = this.props;
+  }
 
   render() {
     const { value, keyboardOpen, animatedWidth, animatedMargin, hasFocus } = this.state;
-    const { handleClear } = this.props;
+    const { handleClear, handleCancel } = this.props;
     const hasText = !!value.length;
 
     return (
       <View style={styles.container}>
-        <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', overflow: 'hidden'}}>
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', overflow: 'hidden' }}>
           <Animated.View style={{ width: animatedWidth }}>
             <TextInput
               placeholder={hasFocus ? '' : 'Translate'}
@@ -119,10 +114,10 @@ export default class AppInput extends Component {
 const styles = {
   container: {
     backgroundColor: colors.medLight,
-    paddingBottom: 8,
-    paddingTop: percentScreenHeight(5),
+    paddingBottom: percentScreenHeight(1.1),
+    paddingTop: percentScreenHeight(4.5),
     paddingLeft: 15,
-    minHeight: percentScreenHeight(12)
+    height: percentScreenHeight(10.5)
   },
   input: {
     color: colors.light,
