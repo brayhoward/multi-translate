@@ -8,27 +8,31 @@ const isoTable = {
   'ar': 'Arabic',
   'hi': 'Hindi',
   'pt': 'Portuguese',
-  'ru': 'Russian'
+  'ru': 'Russian',
+  'bn': 'Bengali',
+  'de': 'German',
+  'id': 'Italian',
+  // Indonesion
+  'ms': 'Malay',
+  'vi': 'Vietnamese',
+  'ko': 'Korean',
+  'fr': 'French',
+  'tr': 'Turkish',
+  'fa': 'Persian',
+  'pl': 'Polish',
+  'nl': 'Dutch'
 }
 
 export default async (value) => {
   try {
-    const translations = await Promise.all([
-      // Spanish
-      translate(value, 'es'),
-      // Chinese
-      translate(value, 'zh'),
-      // Japanese
-      translate(value, 'ja'),
-      // Arabic
-      translate(value, 'ar'),
-      // Hindi
-      translate(value, 'hi'),
-      // Portuguese
-      translate(value, 'pt'),
-      // Russian
-      translate(value, 'ru')
-    ])
+    const apiCallsArray = (
+      Object.keys(isoTable)
+      .map(isoCode => (
+        translate(value, isoCode)
+      ))
+    )
+
+    const translations = await Promise.all( apiCallsArray )
 
     return translations;
   } catch (err) {
@@ -39,7 +43,7 @@ export default async (value) => {
 const translate = async (text = '', targetLanguage) => {
   const url = 'https://api.microsofttranslator.com/V2/Http.svc/Translate';
   const encodedText = encodeURI(text);
-  const query = `?text=${encodedText}?&to=${targetLanguage}&from=en`
+  const query = `?text=${encodedText}&to=${targetLanguage}&from=en`
 
   try {
     const response = await fetch(
@@ -68,5 +72,7 @@ const xmlParser = new DOMParser();
 function getTextFromXml(xml) {
   const responseDoc = xmlParser.parseFromString(xml);
 
-  return responseDoc.getElementsByTagName('string')[0].textContent;
+  const element = responseDoc.getElementsByTagName('string')[0]
+
+  return element ? element.textContent : '❗❗❗'
 }
