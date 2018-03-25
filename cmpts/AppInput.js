@@ -80,13 +80,24 @@ export default class AppInput extends Component {
   ///////////////////
   // PRIVATE METHODS
   ///////////////////
+  debouncedHandleChangeText = debounce(
+    (value) => this.props.handleChangeText(value),
+    250,
+    {
+      trailing: true,
+      maxWait: 1000
+    }
+  )
+
   setFocusState(hasFocus = true) { this.setState({ hasFocus }) }
 
   clearValue = () => this.setState({value: ''})
 
   handleFocus = () => {
     this.setFocusState()
-    this.animateWidth(percentScreenWidth(75))
+
+    // Use slightly longer duration to account for animation timing inconsistencies
+    this.animateWidth(percentScreenWidth(75), 300)
   }
 
   handleBlur = () => {
@@ -94,12 +105,12 @@ export default class AppInput extends Component {
     this.animateWidth()
   }
 
-  animateWidth(toValue = AppInput.defualtWidth) {
+  animateWidth(toValue = AppInput.defualtWidth, duration = 250) {
     Animated.timing(
       this.state.animatedWidth,
       {
         toValue,
-        duration: 250,
+        duration,
       }
     ).start();
   }
@@ -108,7 +119,7 @@ export default class AppInput extends Component {
 const styles = {
   container: {
     backgroundColor: colors.medLight,
-    paddingBottom: 10,
+    paddingBottom: 8,
     paddingTop: percentScreenHeight(5),
     paddingLeft: 15,
     minHeight: percentScreenHeight(12)
@@ -128,6 +139,6 @@ const styles = {
   clearText: { position: 'absolute', right: 5, top: 3 },
   cancel: {
     color: colors.light,
-    marginLeft: 17
+    marginLeft: percentScreenWidth(4)
   }
 }
