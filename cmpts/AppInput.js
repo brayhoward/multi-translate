@@ -74,10 +74,7 @@ export default class AppInput extends Component {
   debouncedHandleChangeText = debounce(
     (value) => this.props.handleChangeText(value),
     250,
-    {
-      trailing: true,
-      maxWait: 1000
-    }
+    { trailing: true }
   )
 
   setFocusState(hasFocus = true) { this.setState({ hasFocus }) }
