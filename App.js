@@ -1,11 +1,12 @@
 // @flow
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import {Text, View, ScrollView } from 'react-native';
 import { percentScreenWidth } from './utils.js';
 import getTranslations from './services/translate';
 import { colors } from './styleVariables';
 import Headings from './cmpts/Headings';
 import AppInput from './cmpts/AppInput';
+import TranslationView from './cmpts/TranslationView'
 
 type Translation = {
   text: string,
@@ -32,16 +33,8 @@ export default class App extends React.Component<Props, State> {
           <AppInput handleChangeText={this.getTranslations} handleClear={this.handleInputClear} />
 
           <ScrollView style={styles.scrollView} accessible={true}>
-            {translations.map(({ text, language }, i) => (
-              <View key={i}>
-                <Headings.Two>{language}</Headings.Two>
-
-                <View style={{marginBottom: 10 }}>
-                  <Headings.One style={{ color: colors.accent }}>
-                    {text}
-                  </Headings.One>
-                </View>
-              </View>
+            {translations.map((translation, i) => (
+              <TranslationView key={i} translation={translation} />
             ))}
           </ScrollView>
         </View>
