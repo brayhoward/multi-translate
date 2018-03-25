@@ -1,7 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import capitalize from 'lodash.capitalize';
-import { Header } from 'react-native-elements';
 
 const defaultStyles = {
   h1: { fontSize: 25 },

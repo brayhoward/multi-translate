@@ -4,7 +4,6 @@ import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { percentScreenWidth } from './utils.js';
 import getTranslations from './services/translate';
 import { colors } from './styleVariables';
-import AppHeader from './cmpts/AppHeader';
 import Headings from './cmpts/Headings';
 import AppInput from './cmpts/AppInput';
 
@@ -29,8 +28,6 @@ export default class App extends React.Component<Props, State> {
 
     return (
       <View style={{ flex: 1 }}>
-        <AppHeader />
-
         <View style={styles.container}>
           <AppInput handleChangeText={this.getTranslations} handleClear={this.handleInputClear} />
 
@@ -69,7 +66,7 @@ export default class App extends React.Component<Props, State> {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.dark,
+    backgroundColor: colors.dark
   },
   heading: {
     marginVertical: 10,

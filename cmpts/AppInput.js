@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Animated, View, TextInput, Text, TouchableOpacity } from 'react-native';
 import debounce from 'lodash.debounce';
-import { SearchBar, Icon } from 'react-native-elements';
+import { Icon } from 'react-native-elements';
 import { percentScreenHeight, percentScreenWidth } from '../utils.js';
 import { colors, bd } from '../styleVariables';
 
@@ -37,7 +37,7 @@ export default class AppInput extends Component {
     return (
       <View style={styles.container}>
         <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', overflow: 'hidden'}}>
-          <Animated.View style={{width: animatedWidth}}>
+          <Animated.View style={{ width: animatedWidth }}>
             <TextInput
               placeholder={hasFocus ? '' : 'Translate'}
               placeholderTextColor={colors.lightMedium}
@@ -108,15 +108,15 @@ export default class AppInput extends Component {
 const styles = {
   container: {
     backgroundColor: colors.medLight,
-    paddingVertical: 10,
+    paddingBottom: 10,
+    paddingTop: percentScreenHeight(5),
     paddingLeft: 15,
-    minHeight: percentScreenHeight(6)
+    minHeight: percentScreenHeight(12)
   },
   input: {
     color: colors.light,
     backgroundColor: colors.medDark,
-    height: 30,
-    borderRadius: 4,
+    height: percentScreenHeight(5),
     paddingLeft: 5,
     paddingRight: 29
   },
