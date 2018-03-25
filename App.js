@@ -31,7 +31,7 @@ export default class App extends React.Component<Props, State> {
         <View style={styles.container}>
           <AppInput handleChangeText={this.getTranslations} handleClear={this.handleInputClear} />
 
-          <ScrollView style={styles.scrollView}>
+          <ScrollView style={styles.scrollView} accessible={true}>
             {translations.map(({ text, language }, i) => (
               <View key={i}>
                 <Headings.Two>{language}</Headings.Two>

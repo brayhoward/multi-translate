@@ -20,13 +20,9 @@ export default class AppInput extends Component {
 
   static get defualtWidth() { return percentScreenWidth(92) }
 
-  componentDidMount() {
-    const { handleCancel } = this.props;
-  }
-
   render() {
     const { value, keyboardOpen, animatedWidth, animatedMargin, hasFocus } = this.state;
-    const { handleClear, handleCancel } = this.props;
+    const { handleClear } = this.props;
     const hasText = !!value.length;
 
     return (
