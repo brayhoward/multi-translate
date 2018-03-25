@@ -73,6 +73,7 @@ export default class App extends React.Component<Props, State> {
     this.setState({ translations: [] })
   }
 
+  // TODO: abstract all the timeout / setState logic into a reusable module
   copyTextCallback = () => {
     const oneSecond = 1000;
     const { timeoutId } = this.state;

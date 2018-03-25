@@ -18,7 +18,7 @@ export default class AppInput extends Component {
     hasFocus: false
   }
 
-  static get defualtWidth() { return percentScreenWidth(92) }
+  static get defualtWidth() { return percentScreenWidth(82) }
 
   render() {
     const { value, keyboardOpen, animatedWidth, animatedMargin, hasFocus } = this.state;
@@ -28,6 +28,16 @@ export default class AppInput extends Component {
     return (
       <View style={styles.container}>
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', overflow: 'hidden' }}>
+          <TouchableOpacity
+            style={{ marginHorizontal: percentScreenWidth(4) }}
+            onPress={() => {
+              this.clearValue()
+              handleClear()
+            }}
+          >
+            <Icon name='settings' color={colors.light} />
+          </TouchableOpacity>
+
           <Animated.View style={{ width: animatedWidth }}>
             <TextInput
               placeholder={hasFocus ? '' : 'Translate'}
@@ -85,7 +95,7 @@ export default class AppInput extends Component {
     this.setFocusState()
 
     // Use slightly longer duration to account for animation timing inconsistencies
-    this.animateWidth(percentScreenWidth(75), 300)
+    this.animateWidth(percentScreenWidth(65), 300)
   }
 
   handleBlur = () => {
@@ -109,7 +119,7 @@ const styles = {
     backgroundColor: colors.medLight,
     paddingBottom: percentScreenHeight(1.1),
     paddingTop: percentScreenHeight(4.5),
-    paddingLeft: 15,
+    // paddingLeft: 10,
     height: percentScreenHeight(10.5)
   },
   input: {
