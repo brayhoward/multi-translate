@@ -1,8 +1,8 @@
 // @flow
 import React, { Component } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, TouchableOpacity } from 'react-native';
 import Modal from "react-native-modal";
-import { CheckBox } from 'react-native-elements';
+import { CheckBox, Icon } from 'react-native-elements';
 import { isoTable } from '../services/translate';
 import { percentScreenWidth, percentScreenHeight } from '../utils.js';
 import { colors } from '../styleVariables';
@@ -38,13 +38,38 @@ export default class extends Component<Props> {
             width: percentScreenWidth(85),
             height: percentScreenHeight(80),
             backgroundColor: colors.light,
-            overflow: 'scroll',
-            paddingTop: 10
+            overflow: 'scroll'
           }}
         >
-          <Headings.Two style={{ color: colors.dark, textAlign: 'center', fontWeight: 'bold' }}>
-            select languages
-          </Headings.Two>
+          <View
+            style={{
+              paddingTop: 10,
+              marginBottom: 10,
+              shadowColor: colors.dark,
+              shadowOffset: {
+                width: 0,
+                height: 1
+              },
+              shadowRadius: 2,
+              shadowOpacity: .4
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                alignSelf: 'flex-end',
+                marginRight: 10,
+                borderColor: colors.dark,
+                borderWidth: 1
+              }}
+              onPress={hideSettings}
+            >
+              <Icon name='clear' color={colors.dark} />
+            </TouchableOpacity>
+
+            <Headings.Two style={{ color: colors.dark, textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>
+              select languages
+            </Headings.Two>
+          </View>
 
           <ScrollView>
             {
