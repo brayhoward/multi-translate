@@ -23,10 +23,12 @@ type State = {
   copiedText: boolean,
   timeoutId: number | undefined,
   showSettings: boolean,
-  isoKeys: Array<string>
+  activeIsoKeys: Array<string>
 }
 
 type Props = undefined;
+
+const isoKeys = Object.keys(isoTable);
 
 export default class App extends React.Component<Props, State> {
   state = {
@@ -34,7 +36,7 @@ export default class App extends React.Component<Props, State> {
     copiedText: false,
     showSettings: false,
     // Default is to show translations for every language in isoTable
-    activeIsoKeys: Object.keys(isoTable)
+    activeIsoKeys: isoKeys
   }
 
   render() {
@@ -75,6 +77,8 @@ export default class App extends React.Component<Props, State> {
           activeIsoKeys={activeIsoKeys}
           hideSettings={() => this.setState({ showSettings: false })}
           handleSettingsUpdate={this.handleSettingsUpdate}
+          handleUnselectAll={this.unselectAllIsoKeys}
+          handleSelectAll={this.selectAllIsoKeys}
         />
       </View>
     );
@@ -99,6 +103,10 @@ export default class App extends React.Component<Props, State> {
   hideSettings = () => {
     this.setState({ showSettings: false })
   }
+
+  unselectAllIsoKeys = () => this.setState({ activeIsoKeys: [] })
+
+  selectAllIsoKeys = () => this.setState({ activeIsoKeys: isoKeys })
 
   handleSettingsUpdate = (isoKey, active: boolean) => {
     const { value = '' } = this.state;

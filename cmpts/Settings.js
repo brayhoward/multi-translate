@@ -23,7 +23,19 @@ type Props = {
 
 export default class extends Component<Props> {
   render() {
-    const { showSettings, hideSettings, handleSettingsUpdate, activeIsoKeys } = this.props;
+    const {
+      showSettings,
+      hideSettings,
+      handleSettingsUpdate,
+      activeIsoKeys,
+      handleUnselectAll,
+      handleSelectAll
+    } = this.props;
+
+    const selectableIsoKeys    = Object.keys(isoTable);
+    const allLanguagesSelected = activeIsoKeys.length === selectableIsoKeys.length
+
+    const handleMultiSelectPress = allLanguagesSelected ? handleUnselectAll : handleSelectAll
 
     return (
       <Modal
@@ -66,15 +78,27 @@ export default class extends Component<Props> {
               <Icon name='clear' color={colors.dark} />
             </TouchableOpacity>
 
-            <Headings.Two style={{ color: colors.dark, textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>
-              select languages
-            </Headings.Two>
+            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+              <CheckBox
+                checkedColor={colors.accentSecondary}
+                uncheckedColor={colors.accentSecondary}
+                containerStyle={{ borderWidth: 0 }}
+                uncheckedIcon="minus-square"
+                checkedIcon="check-square"
+
+                checked={!allLanguagesSelected}
+                onPress={handleMultiSelectPress}
+              />
+
+              <Headings.Two style={{ color: colors.dark, fontWeight: 'bold'}}>
+                select languages
+              </Headings.Two>
+            </View>
           </View>
 
           <ScrollView>
             {
-              Object.keys(isoTable)
-              .map((isoKey, i) => {
+              selectableIsoKeys.map((isoKey, i) => {
                 const language = isoTable[isoKey];
                 const active = activeIsoKeys.find(activeKey => activeKey === isoKey)
 
