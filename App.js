@@ -23,7 +23,7 @@ type State = {
   copiedText: boolean,
   timeoutId: number | undefined,
   showSettings: boolean,
-  isoTableState: { language: string, translate: boolean }
+  isoKeys: Array<string>
 }
 
 type Props = undefined;
@@ -33,13 +33,12 @@ export default class App extends React.Component<Props, State> {
     translations: [],
     copiedText: false,
     showSettings: false,
-    // Add translate boolean to isoTable values and store value under language.
-    // This was so we can toggle on and off based on settings. default value true
-    isoTableState: mapValues(isoTable, language => ({ language, translate: true }))
+    // Default is to show translations for every language in isoTable
+    activeIsoKeys: Object.keys(isoTable)
   }
 
   render() {
-    const { translations, copiedText, showSettings, isoTableState, value } = this.state;
+    const { translations, copiedText, showSettings, activeIsoKeys, value } = this.state;
 
     return (
       <View style={{ flex: 1 }}>
@@ -73,7 +72,7 @@ export default class App extends React.Component<Props, State> {
         {/* Setting Modal */}
         <Settings
           showSettings={showSettings}
-          isoTableState={isoTableState}
+          activeIsoKeys={activeIsoKeys}
           hideSettings={() => this.setState({ showSettings: false })}
           handleSettingsUpdate={this.handleSettingsUpdate}
         />
@@ -81,20 +80,13 @@ export default class App extends React.Component<Props, State> {
     );
   }
 
-  ///////////////////
-  // PRIVATE METHODS
-  ///////////////////
+  /////////////////////////////////////////////////////////////////////
+  //                       PRIVATE METHODS                           //
+  /////////////////////////////////////////////////////////////////////
   handleGetTranslations = value => {
-    const { isoTableState } = this.state;
+    const { activeIsoKeys = [] } = this.state;
 
-    const isoCodes = map(
-      isoTableState,
-      ({ translate }, key) => (translate ? key : null)
-    )
-    .filter(keys => keys)
-
-
-    getTranslations(value, isoCodes)
+    getTranslations(value, activeIsoKeys)
     .then((translations) => {
       this.setState({ translations, value })
     })
@@ -108,21 +100,28 @@ export default class App extends React.Component<Props, State> {
     this.setState({ showSettings: false })
   }
 
-  handleSettingsUpdate = (isoKey, translate: boolean, language) => {
+  handleSettingsUpdate = (isoKey, active: boolean) => {
     const { value = '' } = this.state;
 
-    this.setState(({ isoTableState }) => ({
-      // TODO: This logic hurts to read. Do better
-      isoTableState: {
-        ...isoTableState,
-        ...{ [isoKey]: { translate: !translate, language } }
-      }
-    }))
+    this.setState(({ activeIsoKeys }) => {
+      updatedIsoKeys = (
+        active ?
+          // Remove isoKey from activeIsoKeys array (make inactive)
+          activeIsoKeys.filter( activeIsoKey => activeIsoKey !== isoKey)
+        :
+          // Remove isoKey from activeIsoKeys array
+          [...activeIsoKeys, isoKey]
+      )
 
-    // Let the setState call above propigate before refreshing the translations.
-    setTimeout(() => {
-      this.handleGetTranslations(value);
-    }, 250);
+      return { activeIsoKeys: updatedIsoKeys }
+    })
+
+    if (value) {
+      // Let the setState call above propigate before refreshing the translations.
+      setTimeout(() => {
+        this.handleGetTranslations(value);
+      }, 250);
+    }
   }
 
   // TODO: abstract all the timeout / setState logic into a reusable module

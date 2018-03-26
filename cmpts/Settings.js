@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { View, ScrollView } from 'react-native';
 import Modal from "react-native-modal";
 import { CheckBox } from 'react-native-elements';
-
+import { isoTable } from '../services/translate';
 import { percentScreenWidth, percentScreenHeight } from '../utils.js';
 import { colors } from '../styleVariables';
 import Headings from './Headings';
@@ -23,7 +23,7 @@ type Props = {
 
 export default class extends Component<Props> {
   render() {
-    const { showSettings, hideSettings, handleSettingsUpdate, isoTableState } = this.props;
+    const { showSettings, hideSettings, handleSettingsUpdate, activeIsoKeys } = this.props;
 
     return (
       <Modal
@@ -48,15 +48,18 @@ export default class extends Component<Props> {
 
           <ScrollView>
             {
-              Object.keys(isoTableState).map((isoKey, i) => {
-                const { language, translate } = isoTableState[isoKey];
+              Object.keys(isoTable)
+              .map((isoKey, i) => {
+                const language = isoTable[isoKey];
+                const active = activeIsoKeys.find(activeKey => activeKey === isoKey)
+
                 return (
                   <CheckBox
                     key={i}
                     title={language}
                     checkedColor={colors.accentSecondary}
-                    checked={translate}
-                    onPress={() => handleSettingsUpdate(isoKey, translate, language)}
+                    checked={active}
+                    onPress={() => handleSettingsUpdate(isoKey, active)}
                   />
                 )
               })
