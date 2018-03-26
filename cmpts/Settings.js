@@ -5,7 +5,7 @@ import Modal from "react-native-modal";
 import { CheckBox, Icon } from 'react-native-elements';
 import { isoTable } from '../services/translate';
 import { percentScreenWidth, percentScreenHeight } from '../utils.js';
-import { colors } from '../styleVariables';
+import { colors, bd } from '../styleVariables';
 import Headings from './Headings';
 
 //////////////////////////////////////////////////////////////////////
@@ -14,11 +14,19 @@ import Headings from './Headings';
 //  showSettings: boolean
 //  hideSettings: function called on modal close actions
 //  handleSettingsUpdate: function called on settings update
+//  activeIsoKeys: Array of the selected languages
+//  handleUnselectAll: function to call when unselcting all languages
+//  handleSelectAll: function to call when selcting all languages
+//  getTranslations: function to call to refresh the translations after update the settings
 //////////////////////////////////////////////////////////////////////
 type Props = {
   showSettings: boolean,
-  hideSettings():  void,
-  handleSettingsUpdate(): void
+  activeIsoKeys: Array<string>,
+  hideSettings(): void,
+  handleSettingsUpdate(): void,
+  handleUnselectAll(): void,
+  handleSelectAll(): void,
+  getTranslations(): void
 }
 
 export default class extends Component<Props> {
@@ -29,13 +37,18 @@ export default class extends Component<Props> {
       handleSettingsUpdate,
       activeIsoKeys,
       handleUnselectAll,
-      handleSelectAll
+      handleSelectAll,
+      getTranslations
     } = this.props;
 
     const selectableIsoKeys    = Object.keys(isoTable);
     const allLanguagesSelected = activeIsoKeys.length === selectableIsoKeys.length
 
-    const handleMultiSelectPress = allLanguagesSelected ? handleUnselectAll : handleSelectAll
+    const handleMultiSelectPress = () => {
+      allLanguagesSelected ? handleUnselectAll() : handleSelectAll();
+
+      setTimeout(getTranslations, 250);
+    }
 
     return (
       <Modal
@@ -78,11 +91,18 @@ export default class extends Component<Props> {
               <Icon name='clear' color={colors.dark} />
             </TouchableOpacity>
 
-            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'start'
+              }}
+            >
               <CheckBox
                 checkedColor={colors.accentSecondary}
                 uncheckedColor={colors.accentSecondary}
-                containerStyle={{ borderWidth: 0 }}
+                containerStyle={{ maxWidth: 45, borderWidth: 0 }}
                 uncheckedIcon="minus-square"
                 checkedIcon="check-square"
 

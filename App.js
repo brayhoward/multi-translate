@@ -45,7 +45,7 @@ export default class App extends React.Component<Props, State> {
     return (
       <View style={{ flex: 1 }}>
         <StatusBarAlert
-          backgroundColor={colors.accentSecondary}
+          backgroundColor={colors.accent}
           statusbarHeight={percentScreenHeight(6.1)}
           style={{paddingBottom: copiedText ? 2 : 0 }}
           pulse="background"
@@ -71,7 +71,7 @@ export default class App extends React.Component<Props, State> {
           </ScrollView>
         </View>
 
-        {/* Setting Modal */}
+        {/* Settings Modal */}
         <Settings
           showSettings={showSettings}
           activeIsoKeys={activeIsoKeys}
@@ -79,6 +79,7 @@ export default class App extends React.Component<Props, State> {
           handleSettingsUpdate={this.handleSettingsUpdate}
           handleUnselectAll={this.unselectAllIsoKeys}
           handleSelectAll={this.selectAllIsoKeys}
+          getTranslations={this.handleGetTranslations}
         />
       </View>
     );
@@ -88,12 +89,15 @@ export default class App extends React.Component<Props, State> {
   //                       PRIVATE METHODS                           //
   /////////////////////////////////////////////////////////////////////
   handleGetTranslations = value => {
-    const { activeIsoKeys = [] } = this.state;
+    const { activeIsoKeys = [], value: storedValue } = this.state;
+    value = value || storedValue;
 
-    getTranslations(value, activeIsoKeys)
-    .then((translations) => {
-      this.setState({ translations, value })
-    })
+    if (value) {
+      getTranslations(value, activeIsoKeys)
+      .then((translations) => {
+        this.setState({ translations, value })
+      })
+    }
   }
 
   handleInputClear = () => {
