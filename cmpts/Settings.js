@@ -1,12 +1,10 @@
 // @flow
 import React, { Component } from 'react';
 import { View, ScrollView } from 'react-native';
-import mapValues from 'lodash.mapvalues';
 import Modal from "react-native-modal";
 import { CheckBox } from 'react-native-elements';
 
 import { percentScreenWidth, percentScreenHeight } from '../utils.js';
-import { isoTable } from '../services/translate';
 import { colors } from '../styleVariables';
 import Headings from './Headings';
 
@@ -23,20 +21,9 @@ type Props = {
   handleSettingsUpdate(): void
 }
 
-type State = {
-  isoTableState: { language: string, translate: boolean }
-}
-
-export default class extends Component {
-  state = {
-    // Add translate boolean to isoTable values and store value under language.
-    // This was so we can toggle on and off based on settings. default value true
-    isoTableState: mapValues(isoTable, language => ({ language, translate: true }))
-  }
-
+export default class extends Component<Props> {
   render() {
-    const { showSettings, hideSettings, handleSettingsUpdate } = this.props;
-    const { isoTableState } = this.state;
+    const { showSettings, hideSettings, handleSettingsUpdate, isoTableState } = this.props;
 
     return (
       <Modal

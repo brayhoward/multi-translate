@@ -32,7 +32,7 @@ export default class AppInput extends Component {
             style={{ marginHorizontal: percentScreenWidth(4) }}
             onPress={handleSettingsPress}
           >
-            <Icon name="settings" color={colors.light} accessible={true} />
+            <Icon name="settings" color={colors.light} />
           </TouchableOpacity>
 
           <Animated.View style={{ width: animatedWidth }}>

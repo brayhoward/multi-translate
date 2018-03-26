@@ -3,8 +3,9 @@ import React from 'react';
 import { Text, View, ScrollView } from 'react-native';
 import StatusBarAlert from 'react-native-statusbar-alert';
 import map from 'lodash.map';
+import mapValues from 'lodash.mapvalues';
 import { percentScreenWidth, percentScreenHeight } from './utils.js';
-import getTranslations from './services/translate';
+import getTranslations, { isoTable } from './services/translate';
 import { colors } from './styleVariables';
 import Headings from './cmpts/Headings';
 import AppInput from './cmpts/AppInput';
@@ -21,7 +22,8 @@ type State = {
   translations: Array<Translation>,
   copiedText: boolean,
   timeoutId: number | undefined,
-  showSettings: boolean
+  showSettings: boolean,
+  isoTableState: { language: string, translate: boolean }
 }
 
 type Props = undefined;
@@ -30,7 +32,10 @@ export default class App extends React.Component<Props, State> {
   state = {
     translations: [],
     copiedText: false,
-    showSettings: false
+    showSettings: false,
+    // Add translate boolean to isoTable values and store value under language.
+    // This was so we can toggle on and off based on settings. default value true
+    isoTableState: mapValues(isoTable, language => ({ language, translate: true }))
   }
 
   render() {
@@ -68,6 +73,7 @@ export default class App extends React.Component<Props, State> {
         {/* Setting Modal */}
         <Settings
           showSettings={showSettings}
+          isoTableState={isoTableState}
           hideSettings={() => this.setState({ showSettings: false })}
           handleSettingsUpdate={this.handleSettingsUpdate}
         />
