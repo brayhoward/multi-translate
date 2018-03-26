@@ -19,6 +19,7 @@ type Translation = {
 }
 
 type State = {
+  value: string,
   translations: Array<Translation>,
   copiedText: boolean,
   timeoutId: number | undefined,
@@ -39,7 +40,7 @@ export default class App extends React.Component<Props, State> {
   }
 
   render() {
-    const { translations, copiedText, showSettings, isoTableState } = this.state;
+    const { translations, copiedText, showSettings, isoTableState, value } = this.state;
 
     return (
       <View style={{ flex: 1 }}>
@@ -54,7 +55,7 @@ export default class App extends React.Component<Props, State> {
 
         <View style={styles.container}>
           <AppInput
-            handleChangeText={this.getTranslations}
+            handleChangeText={this.handleGetTranslations}
             handleClear={this.handleInputClear}
             handleSettingsPress={() => this.setState({ showSettings: true })}
           />
@@ -110,6 +111,10 @@ export default class App extends React.Component<Props, State> {
                           ...{ [isoKey]: { translate: !translate, language } }
                         }
                       }))
+
+                      setTimeout(() => {
+                        this.handleGetTranslations(value);
+                      }, 250);
                     }}
                     />
                   )
@@ -125,7 +130,7 @@ export default class App extends React.Component<Props, State> {
   ///////////////////
   // PRIVATE METHODS
   ///////////////////
-  getTranslations = value => {
+  handleGetTranslations = value => {
     const { isoTableState } = this.state;
 
     const isoCodes = map(
@@ -135,9 +140,9 @@ export default class App extends React.Component<Props, State> {
     .filter(keys => keys)
 
 
-    getTranslations(value)
-    .then(translations => {
-      this.setState({ translations })
+    getTranslations(value, isoCodes)
+    .then((translations) => {
+      this.setState({ translations, value })
     })
   }
 
