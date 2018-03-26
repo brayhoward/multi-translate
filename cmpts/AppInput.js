@@ -22,7 +22,7 @@ export default class AppInput extends Component {
 
   render() {
     const { value, keyboardOpen, animatedWidth, animatedMargin, hasFocus } = this.state;
-    const { handleClear } = this.props;
+    const { handleClear, handleSettingsPress } = this.props;
     const hasText = !!value.length;
 
     return (
@@ -30,12 +30,9 @@ export default class AppInput extends Component {
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', overflow: 'hidden' }}>
           <TouchableOpacity
             style={{ marginHorizontal: percentScreenWidth(4) }}
-            onPress={() => {
-              this.clearValue()
-              handleClear()
-            }}
+            onPress={handleSettingsPress}
           >
-            <Icon name='settings' color={colors.light} />
+            <Icon name="settings" color={colors.light} />
           </TouchableOpacity>
 
           <Animated.View style={{ width: animatedWidth }}>

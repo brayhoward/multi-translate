@@ -1,7 +1,7 @@
 import { azureTranslatorKey } from '../secrets';
 import { DOMParser } from 'xmldom';
 
-const isoTable = {
+export const isoTable = {
   'es': 'Spanish',
   'zh': 'Chinese',
   'ja': 'Japanese',
@@ -23,10 +23,10 @@ const isoTable = {
   'nl': 'Dutch'
 }
 
-export default async (value) => {
+export default async (value, isoCodes) => {
   try {
     const apiCallsArray = (
-      Object.keys(isoTable)
+      isoCodes
       .map(isoCode => (
         translate(value, isoCode)
       ))
