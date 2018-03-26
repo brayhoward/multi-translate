@@ -1,6 +1,6 @@
 {
   "expo": {
-    "sdkVersion": "25.0.0"
-  },
-  "description": "Application for translating english to other languages."
+    "sdkVersion": "25.0.0",
+    "description": "Application for translating english to other languages. GitHub: https://github.com/brayhoward/multi-translate"
+  }
 }
