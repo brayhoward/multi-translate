@@ -22,20 +22,24 @@ type State = {
   value: string,
   translations: Array<Translation>,
   copiedText: boolean,
-  clipboardTimeoutId: number | undefined,
+  clipboardTimeoutId: ?number,
+  fetchingTimeoutId: ?number,
   showSettings: boolean,
   activeIsoKeys: Array<string>,
   isFetching: boolean
 }
 
-type Props = undefined;
+type Props = {};
 
 const isoKeys = Object.keys(isoTable);
 
 export default class App extends React.Component<Props, State> {
   state = {
+    value: '',
     translations: [],
     copiedText: false,
+    clipboardTimeoutId: undefined,
+    fetchingTimeoutId: undefined,
     showSettings: false,
     // Default is to show translations for every language in isoTable
     activeIsoKeys: isoKeys,
@@ -99,7 +103,6 @@ export default class App extends React.Component<Props, State> {
           handleSettingsUpdate={this.handleSettingsUpdate}
           handleUnselectAll={this.unselectAllIsoKeys}
           handleSelectAll={this.selectAllIsoKeys}
-          getTranslations={this.handleGetTranslations}
         />
       </View>
     );
@@ -121,9 +124,11 @@ export default class App extends React.Component<Props, State> {
       .then((translations) => {
         this.setState({ translations, value })
 
+        // Let isFetching stay true for a lil longer so the inicator bar doesn't flash on and off
+        //  while the user is typing
         const fetchingTimeoutId = setTimeout(() => {
           this.setState({ isFetching: false, fetchingTimeoutId: undefined })
-        }, 260);
+        }, 400);
 
         this.setState({ fetchingTimeoutId })
       })
@@ -138,32 +143,29 @@ export default class App extends React.Component<Props, State> {
     this.setState({ showSettings: false })
   }
 
-  unselectAllIsoKeys = () => this.setState({ activeIsoKeys: [] })
+  unselectAllIsoKeys = () => this.setState({ activeIsoKeys: [] }, this.handleGetTranslations)
 
-  selectAllIsoKeys = () => this.setState({ activeIsoKeys: isoKeys })
+  selectAllIsoKeys = () => this.setState({ activeIsoKeys: isoKeys }, this.handleGetTranslations)
 
-  handleSettingsUpdate = (isoKey, active: boolean) => {
+  handleSettingsUpdate = (isoKey: string, active: boolean) => {
     const { value = '' } = this.state;
 
-    this.setState(({ activeIsoKeys }) => {
-      updatedIsoKeys = (
-        active ?
-          // Remove isoKey from activeIsoKeys array (make inactive)
-          activeIsoKeys.filter( activeIsoKey => activeIsoKey !== isoKey)
-        :
-          // Remove isoKey from activeIsoKeys array
-          [...activeIsoKeys, isoKey]
-      )
+    this.setState(
+      ({ activeIsoKeys }) => {
+        const updatedIsoKeys = (
+          active ?
+            // Remove isoKey from activeIsoKeys array (make inactive)
+            activeIsoKeys.filter( activeIsoKey => activeIsoKey !== isoKey)
+          :
+            // Remove isoKey from activeIsoKeys array
+            [...activeIsoKeys, isoKey]
+        )
 
-      return { activeIsoKeys: updatedIsoKeys }
-    })
-
-    if (value) {
-      // Let the setState call above propigate before refreshing the translations.
-      setTimeout(() => {
-        this.handleGetTranslations(value);
-      }, 250);
-    }
+        return { activeIsoKeys: updatedIsoKeys }
+      },
+      // setState callback
+      () => this.handleGetTranslations(value)
+    )
   }
 
   // TODO: abstract all the timeout / setState logic into a reusable module
@@ -174,25 +176,26 @@ export default class App extends React.Component<Props, State> {
     // If banner is aleady active remove it and reset it
     if (clipboardTimeoutId) {
       clearTimeout(clipboardTimeoutId);
-      this.setState({ copiedText: false, clipboardTimeoutId: undefined });
-
-      setTimeout(this.triggerCopiedTextAlert, .3 * oneSecond);
-
+      this.setState(
+        { copiedText: false, clipboardTimeoutId: undefined },
+        // Close then open alert againg after half a second
+        () => setTimeout(this.triggerCopiedTextAlert, .5 * oneSecond)
+      );
     } else {
       this.triggerCopiedTextAlert()
     }
   }
 
-  triggerCopiedTextAlert() {
+  triggerCopiedTextAlert = () => {
     const oneSecond = 1000;
     this.setState({ copiedText: true });
 
-    const id = setTimeout(
+    const clipboardTimeoutId = setTimeout(
       () => this.setState({ copiedText: false }),
       1.5 * oneSecond
     )
 
-    this.setState({ clipboardTimeoutId: id })
+    this.setState({ clipboardTimeoutId })
   }
 }
 

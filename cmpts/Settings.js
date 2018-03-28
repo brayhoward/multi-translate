@@ -17,16 +17,14 @@ import Headings from './Headings';
 //  activeIsoKeys: Array of the selected languages
 //  handleUnselectAll: function to call when unselcting all languages
 //  handleSelectAll: function to call when selcting all languages
-//  getTranslations: function to call to refresh the translations after update the settings
 //////////////////////////////////////////////////////////////////////
 type Props = {
   showSettings: boolean,
   activeIsoKeys: Array<string>,
   hideSettings(): void,
-  handleSettingsUpdate(): void,
+  handleSettingsUpdate(isoKey: string, active: boolean): void,
   handleUnselectAll(): void,
-  handleSelectAll(): void,
-  getTranslations(): void
+  handleSelectAll(): void
 }
 
 export default class extends Component<Props> {
@@ -37,18 +35,13 @@ export default class extends Component<Props> {
       handleSettingsUpdate,
       activeIsoKeys,
       handleUnselectAll,
-      handleSelectAll,
-      getTranslations
+      handleSelectAll
     } = this.props;
 
     const selectableIsoKeys    = Object.keys(isoTable);
     const allLanguagesSelected = activeIsoKeys.length === selectableIsoKeys.length
 
-    const handleMultiSelectPress = () => {
-      allLanguagesSelected ? handleUnselectAll() : handleSelectAll();
-
-      setTimeout(getTranslations, 250);
-    }
+    const handleMultiSelectPress = () => allLanguagesSelected ? handleUnselectAll() : handleSelectAll();
 
     return (
       <Modal
@@ -120,7 +113,7 @@ export default class extends Component<Props> {
             {
               selectableIsoKeys.map((isoKey, i) => {
                 const language = isoTable[isoKey];
-                const active = activeIsoKeys.find(activeKey => activeKey === isoKey)
+                const active = activeIsoKeys.includes(isoKey)
 
                 return (
                   <CheckBox
