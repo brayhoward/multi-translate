@@ -112,23 +112,21 @@ export default class App extends PureComponent<Props, State> {
   /////////////////////////////////////////////////////////////////////
   handleGetTranslations = (value?: string) => {
     const { activeIsoKeys = [], value: storedValue } = this.state;
-    value = value || storedValue;
+    value = value || storedValue || '';
 
-    if (value) {
-      this.setState({ isFetching: true })
+    this.setState({ isFetching: true })
 
-      // Cancel the trailing debounced invocation so fetching indicator doesn't flash erratically while
-      // User is typing
-      this.debouncedSetFetchingFalse.cancel()
+    // Cancel the trailing debounced invocation so fetching indicator doesn't flash erratically while
+    // User is typing
+    this.debouncedSetFetchingFalse.cancel()
 
-      getTranslations(value, activeIsoKeys)
-      .then((translations) => {
-        this.setState(
-          { translations, value },
-          this.debouncedSetFetchingFalse
-        )
-      })
-    }
+    getTranslations(value, activeIsoKeys)
+    .then((translations) => {
+      this.setState(
+        { translations, value },
+        this.debouncedSetFetchingFalse
+      )
+    })
   }
 
   debouncedSetFetchingFalse = debounce(

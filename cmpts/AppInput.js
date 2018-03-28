@@ -80,8 +80,11 @@ export default class AppInput extends PureComponent {
   ///////////////////
   debouncedHandleChangeText = debounce(
     this.props.handleChangeText,
-    250,
-    { leading: true }
+    400,
+    {
+      leading: true,
+      maxWait: 500
+    }
   )
 
   setFocusState(hasFocus = true) { this.setState({ hasFocus }) }
