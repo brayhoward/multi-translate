@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Animated, View, TextInput, Text, TouchableOpacity } from 'react-native';
 import debounce from 'lodash.debounce';
 import { Icon } from 'react-native-elements';
@@ -11,7 +11,7 @@ import { colors, bd } from '../styleVariables';
 //  handleChangeText: function that returns the input value on change
 //  handleClear: function that is called on cancel press
 //////////////////////////////////////////////////////////////////////
-export default class AppInput extends Component {
+export default class AppInput extends PureComponent {
   state = {
     value: '',
     animatedWidth: new Animated.Value(AppInput.defualtWidth),
@@ -79,7 +79,7 @@ export default class AppInput extends Component {
   // PRIVATE METHODS
   ///////////////////
   debouncedHandleChangeText = debounce(
-    (value) => this.props.handleChangeText(value),
+    this.props.handleChangeText,
     250,
     { leading: true }
   )

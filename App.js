@@ -1,10 +1,11 @@
 // @flow
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { Text, View, ScrollView } from 'react-native';
 import StatusBarAlert from 'react-native-statusbar-alert';
 import { Bar as ProgressBar } from 'react-native-progress';
 import map from 'lodash.map';
 import mapValues from 'lodash.mapvalues';
+import debounce from 'lodash.debounce';
 import { percentScreenWidth, percentScreenHeight } from './utils.js';
 import getTranslations, { isoTable } from './services/translate';
 import { colors } from './styleVariables';
@@ -23,7 +24,6 @@ type State = {
   translations: Array<Translation>,
   copiedText: boolean,
   clipboardTimeoutId: ?number,
-  fetchingTimeoutId: ?number,
   showSettings: boolean,
   activeIsoKeys: Array<string>,
   isFetching: boolean
@@ -33,13 +33,12 @@ type Props = {};
 
 const isoKeys = Object.keys(isoTable);
 
-export default class App extends React.Component<Props, State> {
+export default class App extends PureComponent<Props, State> {
   state = {
     value: '',
     translations: [],
     copiedText: false,
     clipboardTimeoutId: undefined,
-    fetchingTimeoutId: undefined,
     showSettings: false,
     // Default is to show translations for every language in isoTable
     activeIsoKeys: isoKeys,
@@ -111,29 +110,32 @@ export default class App extends React.Component<Props, State> {
   /////////////////////////////////////////////////////////////////////
   //                       PRIVATE METHODS                           //
   /////////////////////////////////////////////////////////////////////
-  handleGetTranslations = value => {
-    const { activeIsoKeys = [], value: storedValue, fetchingTimeoutId } = this.state;
+  handleGetTranslations = (value?: string) => {
+    const { activeIsoKeys = [], value: storedValue } = this.state;
     value = value || storedValue;
 
     if (value) {
       this.setState({ isFetching: true })
 
-      if (fetchingTimeoutId) clearTimeout(fetchingTimeoutId);
+      // Cancel the trailing debounced invocation so fetching indicator doesn't flash erratically while
+      // User is typing
+      this.debouncedSetFetchingFalse.cancel()
 
       getTranslations(value, activeIsoKeys)
       .then((translations) => {
-        this.setState({ translations, value })
-
-        // Let isFetching stay true for a lil longer so the inicator bar doesn't flash on and off
-        //  while the user is typing
-        const fetchingTimeoutId = setTimeout(() => {
-          this.setState({ isFetching: false, fetchingTimeoutId: undefined })
-        }, 400);
-
-        this.setState({ fetchingTimeoutId })
+        this.setState(
+          { translations, value },
+          this.debouncedSetFetchingFalse
+        )
       })
     }
   }
+
+  debouncedSetFetchingFalse = debounce(
+    () => this.setState({ isFetching: false }),
+    500,
+    { trailing: true }
+  )
 
   handleInputClear = () => {
     this.setState({ translations: [] })

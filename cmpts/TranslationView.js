@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import {
   View,
   Text,
@@ -17,7 +17,7 @@ import Headings from './Headings';
 //  Tranlastion: { text: string, language: string }
 //  copyTextCallback: callback to fire when text is copied to clipboard
 //////////////////////////////////////////////////////////////////////
-export default class extends Component {
+export default class extends PureComponent {
 
   render() {
     const { translation, copyTextCallback } = this.props;

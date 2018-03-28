@@ -1,5 +1,5 @@
 // @flow
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { View, ScrollView, TouchableOpacity } from 'react-native';
 import Modal from "react-native-modal";
 import { CheckBox, Icon } from 'react-native-elements';
@@ -27,7 +27,7 @@ type Props = {
   handleSelectAll(): void
 }
 
-export default class extends Component<Props> {
+export default class extends PureComponent<Props> {
   render() {
     const {
       showSettings,
