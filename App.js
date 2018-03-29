@@ -26,7 +26,8 @@ type State = {
   clipboardTimeoutId: ?number,
   showSettings: boolean,
   activeIsoKeys: Array<string>,
-  isFetching: boolean
+  isFetching: boolean,
+  errorMsg: ?string
 }
 
 type Props = {};
@@ -42,7 +43,8 @@ export default class App extends PureComponent<Props, State> {
     showSettings: false,
     // Default is to show translations for every language in isoTable
     activeIsoKeys: isoKeys,
-    isFetching: false
+    isFetching: false,
+    errorMsg: undefined
   }
 
   render() {
@@ -52,7 +54,8 @@ export default class App extends PureComponent<Props, State> {
       showSettings,
       activeIsoKeys,
       value,
-      isFetching
+      isFetching,
+      errorMsg
     } = this.state;
 
     return (
@@ -64,6 +67,13 @@ export default class App extends PureComponent<Props, State> {
           pulse="background"
           visible={copiedText}
           message="Copied to clipboard!"
+        />
+        <StatusBarAlert
+          backgroundColor={"red"}
+          statusbarHeight={percentScreenHeight(6.1)}
+          style={{paddingBottom: copiedText ? 2 : 0 }}
+          visible={!!errorMsg}
+          message={errorMsg}
         />
 
         <View style={styles.container}>
@@ -127,12 +137,32 @@ export default class App extends PureComponent<Props, State> {
       this.debouncedSetFetchingFalse.cancel()
 
       getTranslations(value, activeIsoKeys)
-      .then((translations) => {
-        this.setState(
-          { translations, value },
-          this.debouncedSetFetchingFalse
-        )
-      });
+      .then(
+        (translations) => {
+          const networkError = !!translations.find(({ text }) => text === 403)
+
+          if (networkError) {
+            this.setState(
+              {
+                errorMsg: 'Network error, please try again later',
+                translations: [],
+                value
+              },
+              () => {
+                this.debouncedSetFetchingFalse();
+                setTimeout(() => { this.setState({ errorMsg: undefined }) }, 1.5 * 1000);
+              }
+            )
+            // Return early; dont set translations state
+            return 403
+          }
+
+          this.setState(
+            { translations, value },
+            this.debouncedSetFetchingFalse
+          )
+        }
+      );
     }
   }
 

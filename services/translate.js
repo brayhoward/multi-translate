@@ -74,5 +74,5 @@ function getTextFromXml(xml) {
 
   const element = responseDoc.getElementsByTagName('string')[0]
 
-  return element ? element.textContent : '❗❗❗'
+  return element ? element.textContent : 403
 }
