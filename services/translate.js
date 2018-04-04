@@ -25,54 +25,29 @@ export const isoTable = {
 
 export default async (value, isoCodes) => {
   try {
-    const apiCallsArray = (
-      isoCodes
-      .map(isoCode => (
-        translate(value, isoCode)
-      ))
-    )
 
-    const translations = await Promise.all( apiCallsArray )
-
-    return translations;
+    return await translate(value, isoCodes);
   } catch (err) {
     console.error(err)
   }
 }
 
-const translate = async (text = '', targetLanguage) => {
-  const url = 'https://api.microsofttranslator.com/V2/Http.svc/Translate';
+const translate = async (text = '', isoCodes) => {
   const encodedText = encodeURI(text);
-  const query = `?text=${encodedText}&to=${targetLanguage}&from=en`
+  const encodedIsoCodes = encodeURI(
+    JSON.stringify(isoCodes)
+  )
+  const url = 'http://0.0.0.0:4000/api/translate';
+  const query = `?text=${encodedText}&iso_codes=${encodedIsoCodes}`
 
   try {
-    const response = await fetch(
-      `${url}${query}`,
-      {
-        headers: {
-          'Ocp-Apim-Subscription-Key': azureTranslatorKey
-        }
-      }
-    );
+    const response = await fetch(`${url}${query}`);
 
-    const xml = await response.text()
-    const text = getTextFromXml(xml)
-    const language = isoTable[targetLanguage]
+    const payload = await response.text()
 
-    return { text, language }
-
+    return JSON.parse(payload).data
   } catch (err) {
     console.error(err);
     return []
   }
-}
-
-const xmlParser = new DOMParser();
-
-function getTextFromXml(xml) {
-  const responseDoc = xmlParser.parseFromString(xml);
-
-  const element = responseDoc.getElementsByTagName('string')[0]
-
-  return element ? element.textContent : 403
 }
