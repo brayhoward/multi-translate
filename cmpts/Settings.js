@@ -3,7 +3,6 @@ import React, { PureComponent } from 'react';
 import { View, ScrollView, TouchableOpacity } from 'react-native';
 import Modal from "react-native-modal";
 import { CheckBox, Icon } from 'react-native-elements';
-import { isoTable } from '../services/translate';
 import { percentScreenWidth, percentScreenHeight } from '../utils.js';
 import { colors, bd } from '../styleVariables';
 import Headings from './Headings';
@@ -14,13 +13,14 @@ import Headings from './Headings';
 //  showSettings: boolean
 //  hideSettings: function called on modal close actions
 //  handleSettingsUpdate: function called on settings update
-//  activeIsoKeys: Array of the selected languages
+//  activeIsoCodes: Array of the selected languages
 //  handleUnselectAll: function to call when unselcting all languages
 //  handleSelectAll: function to call when selcting all languages
 //////////////////////////////////////////////////////////////////////
 type Props = {
   showSettings: boolean,
-  activeIsoKeys: Array<string>,
+  isoTable: any,
+  activeIsoCodes: Array<string>,
   hideSettings(): void,
   handleSettingsUpdate(isoKey: string, active: boolean): void,
   handleUnselectAll(): void,
@@ -33,13 +33,14 @@ export default class extends PureComponent<Props> {
       showSettings,
       hideSettings,
       handleSettingsUpdate,
-      activeIsoKeys,
+      isoTable,
+      activeIsoCodes,
       handleUnselectAll,
       handleSelectAll
     } = this.props;
 
     const selectableIsoKeys    = Object.keys(isoTable);
-    const allLanguagesSelected = activeIsoKeys.length === selectableIsoKeys.length
+    const allLanguagesSelected = activeIsoCodes.length === selectableIsoKeys.length
 
     const handleMultiSelectPress = () => allLanguagesSelected ? handleUnselectAll() : handleSelectAll();
 
@@ -113,7 +114,7 @@ export default class extends PureComponent<Props> {
             {
               selectableIsoKeys.map((isoKey, i) => {
                 const language = isoTable[isoKey];
-                const active = activeIsoKeys.includes(isoKey)
+                const active = activeIsoCodes.includes(isoKey)
 
                 return (
                   <CheckBox

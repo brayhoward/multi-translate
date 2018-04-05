@@ -80,10 +80,10 @@ export default class AppInput extends PureComponent {
   ///////////////////
   debouncedHandleChangeText = debounce(
     this.props.handleChangeText,
-    400,
+    100,
     {
       leading: true,
-      maxWait: 500
+      maxWait: 200
     }
   )
 

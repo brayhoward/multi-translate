@@ -1,53 +1,43 @@
-import { azureTranslatorKey } from '../secrets';
+import { apiKey } from '../secrets';
 import { DOMParser } from 'xmldom';
 
-export const isoTable = {
-  'es': 'Spanish',
-  'zh': 'Chinese',
-  'ja': 'Japanese',
-  'ar': 'Arabic',
-  'hi': 'Hindi',
-  'pt': 'Portuguese',
-  'ru': 'Russian',
-  'bn': 'Bengali',
-  'de': 'German',
-  'id': 'Italian',
-  // Indonesion
-  'ms': 'Malay',
-  'vi': 'Vietnamese',
-  'ko': 'Korean',
-  'fr': 'French',
-  'tr': 'Turkish',
-  'fa': 'Persian',
-  'pl': 'Polish',
-  'nl': 'Dutch'
+export type Translation = {
+  text: string,
+  language: string
 }
 
-export default async (value, isoCodes) => {
-  try {
+const urlBase = 'http://0.0.0.0:4000/api';
 
-    return await translate(value, isoCodes);
-  } catch (err) {
-    console.error(err)
-  }
-}
-
-const translate = async (text = '', isoCodes) => {
+export const getTranslations = (text = '', isoCodes) => {
   const encodedText = encodeURI(text);
   const encodedIsoCodes = encodeURI(
     JSON.stringify(isoCodes)
   )
-  const url = 'http://0.0.0.0:4000/api/translate';
+  const url = `${urlBase}/translate`;
   const query = `?text=${encodedText}&iso_codes=${encodedIsoCodes}`
 
-  try {
-    const response = await fetch(`${url}${query}`);
-
-    const payload = await response.text()
-
-    return JSON.parse(payload).data
-  } catch (err) {
-    console.error(err);
-    return []
-  }
+  return handleFetch(`${url}${query}`)
 }
+
+export const getIsoTable = (): string[] => (
+  handleFetch(`${urlBase}/iso-table`)
+)
+
+////////////////////////////////////////
+//              PRIVATE               //
+////////////////////////////////////////
+const handleFetch = url => (
+  fetch(
+    url,
+    {
+      headers: { 'Api-key': apiKey }
+    }
+  )
+  .then(resp => {
+    if (resp.ok) return resp.text();
+    // else
+    throw new Error('Network error');
+  })
+  .then(json => JSON.parse(json))
+  .then(payload => payload.data)
+)

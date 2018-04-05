@@ -3,21 +3,15 @@ import React, { PureComponent } from 'react';
 import { Text, View, ScrollView } from 'react-native';
 import StatusBarAlert from 'react-native-statusbar-alert';
 import { Bar as ProgressBar } from 'react-native-progress';
-import map from 'lodash.map';
-import mapValues from 'lodash.mapvalues';
 import debounce from 'lodash.debounce';
 import { percentScreenWidth, percentScreenHeight } from './utils.js';
-import getTranslations, { isoTable } from './services/translate';
+import { getTranslations, getIsoTable, Translation } from './services/translate';
 import { colors } from './styleVariables';
 import Headings from './cmpts/Headings';
 import AppInput from './cmpts/AppInput';
 import TranslationView from './cmpts/TranslationView';
 import Settings from './cmpts/Settings';
 
-type Translation = {
-  text: string,
-  language: string
-}
 
 type State = {
   value: string,
@@ -25,14 +19,14 @@ type State = {
   copiedText: boolean,
   clipboardTimeoutId: ?number,
   showSettings: boolean,
-  activeIsoKeys: Array<string>,
   isFetching: boolean,
-  errorMsg: ?string
+  errorMsg: ?string,
+  isoTable: any,
+  isoCodes: Array<string>,
+  activeIsoCodes: Array<string>,
 }
 
 type Props = {};
-
-const isoKeys = Object.keys(isoTable);
 
 export default class App extends PureComponent<Props, State> {
   state = {
@@ -41,10 +35,16 @@ export default class App extends PureComponent<Props, State> {
     copiedText: false,
     clipboardTimeoutId: undefined,
     showSettings: false,
-    // Default is to show translations for every language in isoTable
-    activeIsoKeys: isoKeys,
     isFetching: false,
-    errorMsg: undefined
+    errorMsg: undefined,
+    isoTable: {},
+    isoCodes: [],
+    // Default is to show translations for every language in isoTable
+    activeIsoCodes: [],
+  }
+
+  componentWillMount() {
+    this.getAndSetIsoData();
   }
 
   render() {
@@ -52,7 +52,8 @@ export default class App extends PureComponent<Props, State> {
       translations,
       copiedText,
       showSettings,
-      activeIsoKeys,
+      isoTable,
+      activeIsoCodes,
       value,
       isFetching,
       errorMsg
@@ -107,7 +108,8 @@ export default class App extends PureComponent<Props, State> {
         {/* Settings Modal */}
         <Settings
           showSettings={showSettings}
-          activeIsoKeys={activeIsoKeys}
+          isoTable={isoTable}
+          activeIsoCodes={activeIsoCodes}
           hideSettings={() => this.setState({ showSettings: false })}
           handleSettingsUpdate={this.handleSettingsUpdate}
           handleUnselectAll={this.unselectAllIsoKeys}
@@ -121,12 +123,14 @@ export default class App extends PureComponent<Props, State> {
   //                       PRIVATE METHODS                           //
   /////////////////////////////////////////////////////////////////////
   handleGetTranslations = (value?: string) => {
-    const { activeIsoKeys = [], value: storedValue } = this.state;
+    const { isoCodes, activeIsoCodes, value: storedValue  } = this.state;
     const isValueUndefined = value === undefined;
     value = isValueUndefined ? storedValue : value;
 
-    if (value === '') {
+    if (!isoCodes.length){
+      this.getAndSetIsoData()
 
+    } else if (value === '') {
       this.setState({ translations: [], value: '' })
 
     } else {
@@ -136,34 +140,52 @@ export default class App extends PureComponent<Props, State> {
       // User is typing
       this.debouncedSetFetchingFalse.cancel()
 
-      getTranslations(value, activeIsoKeys)
-      .then(
-        (translations) => {
-          const networkError = !!translations.find(({ text }) => text === 403)
-
-          if (networkError) {
-            this.setState(
-              {
-                errorMsg: 'Network error, please try again later',
-                translations: [],
-                value
-              },
-              () => {
-                this.debouncedSetFetchingFalse();
-                setTimeout(() => { this.setState({ errorMsg: undefined }) }, 1.5 * 1000);
-              }
-            )
-            // Return early; dont set translations state
-            return 403
-          }
-
-          this.setState(
-            { translations, value },
-            this.debouncedSetFetchingFalse
-          )
-        }
-      );
+      getTranslations(value, activeIsoCodes)
+      .then((translations) => {
+        this.setState(
+          { translations, value },
+          this.debouncedSetFetchingFalse
+        )
+      })
+      .catch((err) => {
+        this.debouncedSetFetchingFalse();
+        this.triggerErrorState(err)
+      })
     }
+  }
+
+  triggerErrorState({ message }) {
+    console.log(message);
+
+    this.setState(
+      {
+        errorMsg: 'Network error, please try again later',
+        translations: [],
+        value: ''
+      },
+      () => {
+        this.debouncedSetFetchingFalse();
+        // Remove error banner after 1.5 seconds
+        setTimeout(() => { this.setState({ errorMsg: undefined }) }, 1.5 * 1000);
+      }
+    )
+  }
+
+  getAndSetIsoData() {
+    getIsoTable()
+    .then(isoTable => {
+      const isoCodes = Object.keys(isoTable);
+
+      this.setState({
+        isoTable,
+        isoCodes,
+        activeIsoCodes: isoCodes
+      })
+    })
+    .catch(err => {
+      console.log('Error caught in getIsoTable')
+      this.triggerErrorState(err)
+    })
   }
 
   debouncedSetFetchingFalse = debounce(
@@ -180,27 +202,30 @@ export default class App extends PureComponent<Props, State> {
     this.setState({ showSettings: false })
   }
 
-  unselectAllIsoKeys = () => this.setState({ activeIsoKeys: [] }, this.handleGetTranslations)
+  unselectAllIsoKeys = () => this.setState({ activeIsoCodes: [] }, this.handleGetTranslations)
 
-  selectAllIsoKeys = () => this.setState({ activeIsoKeys: isoKeys }, this.handleGetTranslations)
+  selectAllIsoKeys = () => this.setState(
+    ({ isoCodes }) => ({ activeIsoCodes: isoCodes }),
+    this.handleGetTranslations
+  )
 
-  handleSettingsUpdate = (isoKey: string, active: boolean) => {
+  handleSettingsUpdate = (isoCode: string, active: boolean) => {
     const { value = '' } = this.state;
 
     this.setState(
-      ({ activeIsoKeys }) => {
-        const updatedIsoKeys = (
+      ({ activeIsoCodes }) => {
+        const updatedIsoCodes = (
           active ?
-            // Remove isoKey from activeIsoKeys array (make inactive)
-            activeIsoKeys.filter( activeIsoKey => activeIsoKey !== isoKey)
+            // Remove isoKey from activeIsoCodes array (make inactive)
+            activeIsoCodes.filter(activeIsoKey => activeIsoKey !== isoCode)
           :
-            // Remove isoKey from activeIsoKeys array
-            [...activeIsoKeys, isoKey]
+            // Remove isoKey from activeIsoCodes array
+            [...activeIsoCodes, isoCode]
         )
 
-        return { activeIsoKeys: updatedIsoKeys }
+        return { activeIsoCodes: updatedIsoCodes }
       },
-      // setState callback
+      // After updating activeIsoCodes refresh translations
       () => this.handleGetTranslations(value)
     )
   }
