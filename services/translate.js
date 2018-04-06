@@ -30,7 +30,7 @@ const handleFetch = url => (
   fetch(
     url,
     {
-      headers: { 'Api-key': apiKey }
+      headers: { 'api-key': apiKey }
     }
   )
   .then(resp => {
