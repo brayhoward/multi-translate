@@ -6,7 +6,8 @@ export type Translation = {
   language: string
 }
 
-const urlBase = 'https://multi-translate-api.herokuapp.com/api';
+const devApi = false;
+const urlBase = devApi ? 'http://localhost:4000/api' : 'https://multi-translate-api.herokuapp.com/api';
 
 export const getTranslations = (text = '', isoCodes) => {
   const encodedText = encodeURI(text);
