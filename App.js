@@ -147,16 +147,14 @@ export default class App extends PureComponent<Props, State> {
           this.debouncedSetFetchingFalse
         )
       })
-      .catch((err) => {
+      .catch(() => {
         this.debouncedSetFetchingFalse();
-        this.triggerErrorState(err)
+        this.triggerErrorState()
       })
     }
   }
 
-  triggerErrorState({ message }) {
-    console.log(message);
-
+  triggerErrorState() {
     this.setState(
       {
         errorMsg: 'Network error, please try again later',
@@ -182,9 +180,8 @@ export default class App extends PureComponent<Props, State> {
         activeIsoCodes: isoCodes
       })
     })
-    .catch(err => {
-      console.log('Error caught in getIsoTable')
-      this.triggerErrorState(err)
+    .catch(() => {
+      this.triggerErrorState()
     })
   }
 
